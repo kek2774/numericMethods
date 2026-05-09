@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 
 
 def input_matrix_SLAY(matrix_dim: int):
@@ -67,3 +68,40 @@ def input_matrix(matrix_dim: int):
         A.append(row)
 
     return np.array(A, dtype=float)
+
+
+def input_table(table_length: int, rows_name: list[str] = ["xᵢ", "yᵢ"]):
+
+    columns = [""] + [f"{i + 1}" for i in range(table_length)]
+    df = pd.DataFrame(
+        [
+            [rows_name[0]] + [None] * table_length,
+            [rows_name[1]] + [None] * table_length,
+        ],
+        columns=columns,
+    )
+
+    edited_df = st.data_editor(
+        df,
+        hide_index=True,
+        width="content",
+        height="content",
+        disabled=[""],  # первый столбец
+        column_config={
+            "": st.column_config.TextColumn(
+                "",
+                width=70,
+            ),
+            **{
+                str(i + 1): st.column_config.NumberColumn(
+                    str(i + 1),
+                    format="%.6f",
+                    step=0.001,
+                    width=110,
+                )
+                for i in range(table_length)
+            },
+        },
+    )
+
+    return edited_df

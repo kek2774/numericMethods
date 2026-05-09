@@ -14,7 +14,9 @@ b = result_matrixes["b"]
 
 methods_seq = ["Метод Гаусса", "Метод простой итерации"]
 method = st.selectbox("Выберите метод", methods_seq, width=240)
-eps = st.number_input("Введите точность", min_value=0.000001, max_value=10.0, width=240)
+eps = st.number_input(
+    "Введите точность", min_value=0.000001, max_value=10.0, width=240, value=0.01
+)
 if method == methods_seq[0]:
     pass
     # do_gauss_method
