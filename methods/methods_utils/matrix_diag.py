@@ -1,3 +1,5 @@
+from unittest import result
+
 import numpy as np
 
 
@@ -33,3 +35,15 @@ def get_diag_matrix(A: np.ndarray) -> np.ndarray:
         result_matrix[i, i] = A[i, i]
 
     return result_matrix
+
+
+def get_diag_as_vector(A: np.ndarray) -> np.ndarray:
+    dim = A.shape[0]
+    result_vector: np.ndarray = np.zeros(dim, dtype=float)
+
+    for i in range(dim):
+        for j in range(dim):
+            if i == j:
+                result_vector[i] = A[i, j]
+
+    return result_vector

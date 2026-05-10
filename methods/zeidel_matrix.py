@@ -1,3 +1,5 @@
+from typing import Callable
+
 import numpy as np
 from .methods_utils import norm
 from .methods_utils import matrix_diag
@@ -41,7 +43,7 @@ def solve_zeidel_matrix(
         ],
         dtype=float,
     )
-    vec_norm = norm.vec_norm_1
+    vec_norm: Callable[..., float] = norm.vec_norm_1
     correct_norm = None
 
     # Проверка на достаточное условие сходимости

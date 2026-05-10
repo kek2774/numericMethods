@@ -1,3 +1,5 @@
+from typing import Callable
+
 import numpy as np
 from .methods_utils import norm
 
@@ -34,7 +36,7 @@ def solve_mpi_matrix(
         ],
         dtype=float,
     )
-    vec_norm = norm.vec_norm_1
+    vec_norm: Callable[..., float] = norm.vec_norm_1
     correct_norm = None
 
     # Проверка на достаточное условие сходимости
@@ -65,7 +67,7 @@ def solve_mpi_matrix(
                     x_vec_new[i] += B_matrix[i, j] * x_vec_old[j]
         iterations += 1
 
-        x_diff_norm = vec_norm(x_vec_new - x_vec_old)
+        x_diff_norm: float = vec_norm(x_vec_new - x_vec_old)
         if correct_norm / (1 - correct_norm) * x_diff_norm < eps:
             break
 
