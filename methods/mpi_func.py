@@ -1,6 +1,7 @@
 from typing import Callable
 from .methods_utils import diffs
 import numpy as np
+import pandas as pd
 
 
 def phi(f: Callable[..., float], x: float, lambda_value: float) -> float:
@@ -31,7 +32,7 @@ def get_phi_pars(
     return (lambda_value, q)
 
 
-def solve_mpi(
+def clean_solve_mpi_matrix(
     eps: float, f: Callable[..., float], a: float, b: float, maxiter: int = 10000
 ) -> float | None:
 
@@ -65,3 +66,85 @@ def solve_mpi(
             return None
 
     return x_new
+
+
+def pretty_solve_mpi_matrix(
+    eps: float, f: Callable[..., float], a: float, b: float, maxiter: int = 10000
+) -> dict:
+
+    if eps <= 0:
+        return {
+            "status": "error",
+            "message": "Точность должна быть положительной",
+        }
+
+    if f(a) * f(b) > 0:
+        return {
+            "status": "error",
+            "message": "На введенном отрезке не существует решения",
+        }
+
+    if abs(f(a)) < 1e-12:
+        return {
+            "status": "ok",
+            "solution": a,
+        }
+    if abs(f(b)) < 1e-12:
+        return {
+            "status": "ok",
+            "solution": b,
+        }
+
+    phi_pars: None | tuple[float, float] = get_phi_pars(f, a, b)
+    if phi_pars is None:
+        return {
+            "status": "error",
+            "message": "Не удалось определить параметры для функции phi",
+        }
+
+    lambda_val, q = phi_pars
+
+    rows: list = []
+    x_0: float = (a + b) / 2
+    x_old: float = x_0
+    x_new: float = phi(f, x_old, lambda_val)
+    iterations: int = 1
+
+    rows.append(
+        {
+            "iteration": iterations,
+            "x_n": x_0,
+            "x_n+1": x_new,
+            "|x_n+1 - x_n|": abs(x_new - x_old),
+            "accuracy": q / (1 - q) * abs(x_new - x_old),
+        }
+    )
+
+    while q / (1 - q) * abs(x_new - x_old) >= eps:
+        x_old = x_new
+        x_new = phi(f, x_old, lambda_val)
+        iterations += 1
+
+        if iterations >= maxiter:
+            return {
+                "status": "error",
+                "message": "Превышено максимальное число итераций",
+            }
+
+        rows.append(
+            {
+                "iteration": iterations,
+                "x_n": x_old,
+                "x_n+1": x_new,
+                "|x_n+1 - x_n|": abs(x_new - x_old),
+                "accuracy": q / (1 - q) * abs(x_new - x_old),
+            }
+        )
+
+    return {
+        "status": "ok",
+        "solution": x_new,
+        "iteration_table": pd.DataFrame(rows),
+        "q": q,
+        "lambda_val": lambda_val,
+    }
