@@ -8,16 +8,16 @@ def solve_progonka_matrix(
     dim = A.shape[0]
 
     # Чтобы не портить исходные данные
-    A_matrix = A.copy()
-    d_coeff = b.copy()
+    A_matrix: np.ndarray = A.copy().astype(float)
+    d_coeff: np.ndarray = b.copy().astype(float)
 
-    x_vec = np.zeros(dim, dtype=float)
-    residual_vec = np.zeros(dim, dtype=float)
+    x_vec: np.ndarray = np.zeros(dim, dtype=float)
+    residual_vec: np.ndarray = np.zeros(dim, dtype=float)
 
     # Заполняем массивы a, b, c
-    a_coeff = np.zeros(dim, dtype=float)
-    b_coeff = np.zeros(dim, dtype=float)
-    c_coeff = np.zeros(dim, dtype=float)
+    a_coeff: np.ndarray = np.zeros(dim, dtype=float)
+    b_coeff: np.ndarray = np.zeros(dim, dtype=float)
+    c_coeff: np.ndarray = np.zeros(dim, dtype=float)
     for i in range(dim):
         b_coeff[i] = A_matrix[i, i]
 
@@ -27,6 +27,7 @@ def solve_progonka_matrix(
         if i < dim - 1:
             c_coeff[i] = A_matrix[i, i + 1]
 
+        #  Проверка условия диагонального преобладания
         if abs(b_coeff[i]) < abs(a_coeff[i]) + abs(c_coeff[i]):
             return None
 
@@ -35,8 +36,8 @@ def solve_progonka_matrix(
     if abs(b_coeff[0]) < tmp_eps:
         return None
 
-    A_coeff = np.zeros(dim, dtype=float)
-    B_coeff = np.zeros(dim, dtype=float)
+    A_coeff: np.ndarray = np.zeros(dim, dtype=float)
+    B_coeff: np.ndarray = np.zeros(dim, dtype=float)
     A_coeff[0] = -c_coeff[0] / b_coeff[0]
     B_coeff[0] = d_coeff[0] / b_coeff[0]
 

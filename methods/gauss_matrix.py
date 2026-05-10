@@ -3,14 +3,14 @@ import numpy as np
 
 def solve_gauss(A: np.ndarray, b: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
     # Чтобы не портить исходный массив
-    A_matrix = A.copy()
-    b_vec = b.copy()
+    A_matrix: np.ndarray = A.copy().astype(float)
+    b_vec: np.ndarray = b.copy().astype(float)
 
     dim: int = A_matrix.shape[0]
     x_vec: np.ndarray = np.zeros(dim, dtype=float)
     residual_vec: np.ndarray = np.zeros(dim, dtype=float)
 
-    tmp_eps = 1e-9
+    tmp_eps: float = 1e-9
     # Прямой ход
     for row in range(dim):
         if abs(A_matrix[row, row]) < tmp_eps:  # Если опорный элемент 0
@@ -44,9 +44,9 @@ def solve_gauss(A: np.ndarray, b: np.ndarray) -> tuple[np.ndarray, np.ndarray] |
 
     # Вычисление невязок
     for row in range(dim):
-        summa: float | int = 0
+        summa_for_residual: float | int = 0
         for i in range(dim):
-            summa += A[row, i] * x_vec[i]
-        residual_vec[row] = b[row] - summa
+            summa_for_residual += A[row, i] * x_vec[i]
+        residual_vec[row] = b[row] - summa_for_residual
 
     return (x_vec, residual_vec)
