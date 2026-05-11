@@ -1,5 +1,3 @@
-from unittest import result
-
 import numpy as np
 
 
@@ -47,3 +45,19 @@ def get_diag_as_vector(A: np.ndarray) -> np.ndarray:
                 result_vector[i] = A[i, j]
 
     return result_vector
+
+
+def build_diag_row(
+    left: float, center: float, right: float, dim: int, row: int
+) -> np.ndarray:
+    result_row: np.ndarray = np.zeros(dim, dtype=float)
+
+    result_row[row] = center
+
+    if row > 0:
+        result_row[row - 1] = left
+
+    if row < dim - 1:
+        result_row[row + 1] = right
+
+    return result_row
