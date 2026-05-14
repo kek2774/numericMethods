@@ -12,11 +12,17 @@ def small_l(x_arr: np.ndarray, x_fixed: float, j: int) -> float:
     return prod
 
 
-def clean_solve_lagrange_table(table: pd.DataFrame, x_star: float) -> float | None:
+def clean_solve_lagrange_table(
+    table: pd.DataFrame, x_star: float, xy_nicely_formatted: bool = False
+) -> float | None:
 
     # Берем строку, преобразовываем ее в список, берем все элементы списка после первого (первый - название строки)
-    x: np.ndarray = np.array(table.iloc[0].tolist()[1:], dtype=float)
-    y: np.ndarray = np.array(table.iloc[1].tolist()[1:], dtype=float)
+    if not xy_nicely_formatted:
+        x: np.ndarray = np.array(table.iloc[0].tolist()[1:], dtype=float)
+        y: np.ndarray = np.array(table.iloc[1].tolist()[1:], dtype=float)
+    else:
+        x = np.array(table["x"], dtype=float)
+        y = np.array(table["y"], dtype=float)
 
     if len(np.unique(x)) != len(x):
         return None
@@ -43,31 +49,31 @@ def pretty_solve_lagrange_table(table: pd.DataFrame, x_star: float) -> dict:
     except Exception:
         return {
             "status": "error",
-            "message": "Не удалось прочитать таблицу значений x и y.",
+            "message": "Не удалось прочитать таблицу значений x и y",
         }
 
     if len(x) == 0 or len(y) == 0:
         return {
             "status": "error",
-            "message": "Таблица значений пуста.",
+            "message": "Таблица значений пуста",
         }
 
     if len(x) != len(y):
         return {
             "status": "error",
-            "message": "Количество значений x и y не совпадает.",
+            "message": "Количество значений x и y не совпадает",
         }
 
     if len(np.unique(x)) != len(x):
         return {
             "status": "error",
-            "message": "Значения x должны быть различными.",
+            "message": "Значения x должны быть различными",
         }
 
     if not isinstance(x_star, (float, int)):
         return {
             "status": "error",
-            "message": "x* должен быть числом.",
+            "message": "x* должен быть числом",
         }
 
     rows: list = []
