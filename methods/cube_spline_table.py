@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
 from typing import Any
+
+from .progonka_matrix import clean_solve_progonka_matrix
 from .methods_utils import matrix_diag
-from .gauss_matrix import clean_solve_gauss_matrix
 
 
 def get_h_and_deltas(x: np.ndarray, y: np.ndarray) -> tuple | None:
@@ -76,7 +77,10 @@ def get_c_coeffs(x: np.ndarray, y: np.ndarray) -> np.ndarray | None:
         A_matrix[row] = matrix_diag.build_diag_row(a, b, c_tmp, A_matrix.shape[0], row)
         b_vec[row] = 3 * (deltas[i] - deltas[i - 1])
 
-    res = clean_solve_gauss_matrix(A_matrix, b_vec)
+    if nodes_count == 1:
+        res = (np.array([], dtype=float), np.array([], dtype=float))
+    else:
+        res = clean_solve_progonka_matrix(A_matrix, b_vec)
     if res is None:
         return None
 
@@ -238,7 +242,10 @@ def pretty_solve_cubic_splines_table(table: pd.DataFrame) -> dict[str, Any]:
             }
         )
 
-    res = clean_solve_gauss_matrix(A_matrix, b_vec)
+    if nodes_count == 1:
+        res = (np.array([], dtype=float), np.array([], dtype=float))
+    else:
+        res = clean_solve_progonka_matrix(A_matrix, b_vec)
     if res is None:
         return {
             "status": "error",

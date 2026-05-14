@@ -28,10 +28,6 @@ def clean_solve_progonka_matrix(
         if i < dim - 1:
             c_coeff[i] = A_matrix[i, i + 1]
 
-        #  Проверка условия диагонального преобладания
-        if abs(b_coeff[i]) < abs(a_coeff[i]) + abs(c_coeff[i]):
-            return None
-
     # Вычисление коэффициентов A, B
 
     if abs(b_coeff[0]) < tmp_eps:
@@ -104,14 +100,6 @@ def pretty_solve_progonka_matrix(A: np.ndarray, b: np.ndarray) -> dict:
                 "condition": abs(b_coeff[i]) >= abs(a_coeff[i]) + abs(c_coeff[i]),
             }
         )
-
-        #  Проверка условия диагонального преобладания
-        if abs(b_coeff[i]) < abs(a_coeff[i]) + abs(c_coeff[i]):
-            return {
-                "status": "error",
-                "message": "Не выполнено условие диагонального преобладания",
-                "dominance_table": pd.DataFrame(dominance_rows),
-            }
 
     for i in range(dim):
         coeff_rows.append(
