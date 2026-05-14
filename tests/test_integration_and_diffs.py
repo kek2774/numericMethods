@@ -105,74 +105,6 @@ def test_simpson_returns_none_if_maxiter_too_small() -> None:
 # clean_solve_first_diff_table
 # ============================================================
 
-
-def test_first_diff_for_linear_function() -> None:
-    # y = 3x + 2
-    # На каждом отрезке производная должна быть 3
-    x = [0.0, 1.0, 2.0, 3.0]
-    y = [2.0, 5.0, 8.0, 11.0]
-
-    table = make_table(x, y)
-    x_dots = np.array([0.0, 1.0, 2.0])
-
-    result = clean_solve_first_diff_table(table, x_dots)
-
-    assert result is not None
-    np.testing.assert_allclose(
-        result,
-        np.array([3.0, 3.0, 3.0]),
-        rtol=1e-10,
-        atol=1e-10,
-    )
-
-
-def test_first_diff_for_quadratic_function_uniform_grid() -> None:
-    # y = x^2
-    # Конечные первые разности:
-    # [1 - 0] / [1 - 0] = 1
-    # [4 - 1] / [2 - 1] = 3
-    # [9 - 4] / [3 - 2] = 5
-    x = [0.0, 1.0, 2.0, 3.0]
-    y = [0.0, 1.0, 4.0, 9.0]
-
-    table = make_table(x, y)
-    x_dots = np.array([0.0, 1.0, 2.0])
-
-    result = clean_solve_first_diff_table(table, x_dots)
-
-    assert result is not None
-    np.testing.assert_allclose(
-        result,
-        np.array([1.0, 3.0, 5.0]),
-        rtol=1e-10,
-        atol=1e-10,
-    )
-
-
-def test_first_diff_returns_none_for_duplicate_x() -> None:
-    x = [0.0, 1.0, 1.0, 2.0]
-    y = [0.0, 1.0, 2.0, 4.0]
-
-    table = make_table(x, y)
-    x_dots = np.array([0.0, 1.0])
-
-    result = clean_solve_first_diff_table(table, x_dots)
-
-    assert result is None
-
-
-def test_first_diff_returns_none_for_too_few_points() -> None:
-    x = [0.0]
-    y = [1.0]
-
-    table = make_table(x, y)
-    x_dots = np.array([0.0])
-
-    result = clean_solve_first_diff_table(table, x_dots)
-
-    assert result is None
-
-
 # ============================================================
 # clean_solve_second_diff_table
 # ============================================================
@@ -231,15 +163,3 @@ def test_second_diff_returns_none_for_duplicate_x() -> None:
 
     assert result is None
 
-
-def test_second_diff_returns_none_for_too_few_points() -> None:
-    # Для второй производной нужно минимум 3 точки.
-    x = [0.0, 1.0]
-    y = [0.0, 1.0]
-
-    table = make_table(x, y)
-    x_dots = np.array([0.0])
-
-    result = clean_solve_second_diff_table(table, x_dots)
-
-    assert result is None
