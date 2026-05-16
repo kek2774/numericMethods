@@ -8,6 +8,7 @@ from typing import Any, Callable
 
 import flet as ft
 import flet_charts as fch
+import flet_datatable2 as fdt
 import numpy as np
 import pandas as pd
 import sympy as sp
@@ -391,11 +392,19 @@ def _looks_like_math_cell(value: str) -> bool:
 def df_to_datatable(df: pd.DataFrame) -> ft.Control:
     if df.empty:
         return ft.Text("(пусто)", italic=True, color=ft.Colors.ON_SURFACE_VARIANT)
-    columns = [
-        ft.DataColumn(latex_inline(_column_label_latex(str(c)), fontsize=LATEX_SIZE_SMALL))
-        for c in df.columns
-    ]
-    rows: list[ft.DataRow] = []
+    column_names = [str(c) for c in df.columns]
+
+    def make_columns() -> list[fdt.DataColumn2]:
+        return [
+            fdt.DataColumn2(
+                label=latex_inline(_column_label_latex(name), fontsize=LATEX_SIZE_SMALL),
+                fixed_width=74 if index == 0 else None,
+                size=fdt.DataColumnSize.S,
+            )
+            for index, name in enumerate(column_names)
+        ]
+
+    rows: list[fdt.DataRow2] = []
     for _, row in df.iterrows():
         cells: list[ft.DataCell] = []
         for value in row.tolist():
@@ -412,18 +421,33 @@ def df_to_datatable(df: pd.DataFrame) -> ft.Control:
                 else:
                     cell_ctrl = ft.Text(text_value, size=12, color=LATEX_TEXT_COLOR)
             cells.append(ft.DataCell(cell_ctrl))
-        rows.append(ft.DataRow(cells=cells))
-    table = ft.DataTable(
-        columns=columns,
+        rows.append(fdt.DataRow2(cells=cells, specific_row_height=56))
+
+    row_height = 56
+    heading_height = 58
+    visible_rows = min(max(len(rows), 1), 8)
+    table_height = heading_height + visible_rows * row_height + 18
+    table = fdt.DataTable2(
+        columns=make_columns(),
         rows=rows,
-        heading_row_height=52,
-        data_row_min_height=40,
-        data_row_max_height=64,
-        column_spacing=20,
+        fixed_top_rows=1,
+        fixed_left_columns=1 if len(column_names) > 1 else 0,
+        fixed_columns_color=ft.Colors.SURFACE_CONTAINER_HIGHEST,
+        fixed_corner_color=ft.Colors.SURFACE_CONTAINER_HIGHEST,
+        heading_row_color=ft.Colors.SURFACE_CONTAINER_HIGH,
+        heading_row_height=heading_height,
+        data_row_height=row_height,
         horizontal_margin=12,
+        column_spacing=20,
+        min_width=max(720, 92 + 138 * max(len(column_names) - 1, 1)),
+        height=table_height,
+        show_bottom_border=True,
+        horizontal_lines=ft.BorderSide(0.6, ft.Colors.OUTLINE_VARIANT),
+        visible_horizontal_scroll_bar=True,
+        visible_vertical_scroll_bar=len(rows) > visible_rows,
     )
     return ft.Container(
-        content=ft.Row([table], scroll=ft.ScrollMode.AUTO, spacing=0),
+        content=table,
         padding=ft.Padding.symmetric(vertical=4),
     )
 
@@ -1052,6 +1076,19 @@ def _stretch_zero_axis(series: list[ChartSeries], x_min: float, x_max: float) ->
     ]
 
 
+def _with_visible_zero_axis(
+    series: list[ChartSeries],
+    x_min: float,
+    x_max: float,
+    y_min: float,
+    y_max: float,
+) -> list[ChartSeries]:
+    stretched = _stretch_zero_axis(series, x_min, x_max)
+    if y_min <= 0.0 <= y_max and not any(_is_zero_axis_series(s) for s in stretched):
+        return [*stretched, _zero_line(x_min, x_max)]
+    return stretched
+
+
 def _apply_line_chart_view(
     chart: fch.LineChart,
     series: list[ChartSeries],
@@ -1063,7 +1100,7 @@ def _apply_line_chart_view(
         x_pad_frac=x_pad_frac,
         y_pad_frac=y_pad_frac,
     )
-    series = _stretch_zero_axis(series, x_min, x_max)
+    series = _with_visible_zero_axis(series, x_min, x_max, y_min, y_max)
     chart.data_series = [_series_to_line(s) for s in series]
     chart.min_x, chart.max_x = x_min, x_max
     chart.min_y, chart.max_y = y_min, y_max
@@ -1107,7 +1144,7 @@ def build_line_chart(
     if y_max is None:
         y_max = auto_ymax
 
-    series = _stretch_zero_axis(series, x_min, x_max)
+    series = _with_visible_zero_axis(series, x_min, x_max, y_min, y_max)
 
     return fch.LineChart(
         data_series=[_series_to_line(s) for s in series],
@@ -1712,7 +1749,11 @@ def page_task2(page: ft.Page) -> ft.Control:
 
 
 def page_task3() -> ft.Control:
-    return ft.Column([section_title("Задание 3", "Метод вращения")], spacing=14)
+    return ft.Container(
+        content=ft.Text("Не реализовано", size=28, weight=ft.FontWeight.W_700),
+        alignment=ft.Alignment.CENTER,
+        expand=True,
+    )
 
 
 def page_task4(page: ft.Page) -> ft.Control:

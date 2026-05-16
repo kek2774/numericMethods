@@ -13,7 +13,7 @@ audioop-lts==0.2.2
 av==16.1.0
 beautifulsoup4==4.14.3
 bidict==0.23.1
-binaryornot==0.6.0
+binaryornot==0.4.4
 black==26.1.0
 blinker==1.9.0
 cachetools==7.0.6
@@ -39,10 +39,11 @@ fastapi==0.136.1
 faster-whisper==1.2.1
 filelock==3.24.2
 flatbuffers==25.12.19
-flet==0.82.0
-flet-charts==0.82.0
-flet-cli==0.82.0
-flet-desktop==0.82.0
+flet==0.85.1
+flet-charts==0.85.1
+flet-cli==0.85.1
+flet-datatable2==0.85.1
+flet-desktop==0.85.1
 fonttools==4.59.0
 frozenlist==1.5.0
 fsspec==2026.2.0

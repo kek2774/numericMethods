@@ -322,16 +322,7 @@ def task_2() -> None:
 
 def task_3() -> None:
     section("3. Метод вращения")
-    task_brief(
-        task="Найти собственные значения и собственные векторы симметричной матрицы методом вращения.",
-        condition="A = [[50 + 3n, 10 - n, 3], [10 - n, 20 + 2n, 10 - n], [3, 10 - n, 90 - n]].",
-        restrictions=(
-            f"Точность: ε = {EPS}.",
-            "n - номер варианта.",
-            "Метод вращения не подключен в текущем запуске.",
-        ),
-        answers=("Расчет пропущен: метод вращения не выполняется.",),
-    )
+    line("Статус", "Не реализовано")
 
 
 def task_4() -> None:
@@ -824,7 +815,7 @@ def build_summary_rows(selected: Iterable[int]) -> list[dict[str, Any]]:
         )
 
     if 3 in selected_set:
-        add_summary_row(rows, 3, "метод вращения", "расчет пропущен: метод не подключен")
+        add_summary_row(rows, 3, "метод вращения", "Не реализовано")
 
     if 4 in selected_set:
         def f4(x: float) -> float:
