@@ -1356,11 +1356,16 @@ def chart_spline(xs: np.ndarray, ys: np.ndarray, spline_result: dict[str, Any]) 
     coeffs = np.asarray(spline_result.get("coefficients", []))
     curve_x: list[float] = []
     curve_y: list[float] = []
-    for i in range(1, len(xs)):
-        a, b, c, d = coeffs[i - 1]
-        x_left, x_right = float(xs[i - 1]), float(xs[i])
-        seg = np.linspace(x_left, x_right, 30)
-        vals = a + b * (seg - x_right) + c * (seg - x_right) ** 2 + d * (seg - x_right) ** 3
+    segment_count = min(len(xs) - 1, len(coeffs))
+    for i in range(segment_count):
+        a, b, c, d = coeffs[i]
+        x_left, x_right = float(xs[i]), float(xs[i + 1])
+        seg = np.linspace(x_left, x_right, 80)
+        dx = seg - x_left
+        vals = a + b * dx + c * dx ** 2 + d * dx ** 3
+        if i > 0:
+            seg = seg[1:]
+            vals = vals[1:]
         curve_x.extend(seg.tolist())
         curve_y.extend(vals.tolist())
     series = [
